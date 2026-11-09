@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>J.A.R.V.I.S.</title>
+
+<style>
+body {
+  background: #020812;
+  color: #00cfff;
+  font-family: Arial;
+  text-align: center;
+  padding: 30px;
+}
+h1 {
+  letter-spacing: 8px;
+  text-shadow: 0 0 15px cyan;
+}
+#core {
+  width: 180px;
+  height: 180px;
+  border: 4px solid cyan;
+  border-radius: 50%;
+  margin: 40px auto;
+  box-shadow: 0 0 35px cyan;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  50% { box-shadow: 0 0 65px cyan; }
+}
+button {
+  background: transparent;
+  color: cyan;
+  border: 2px solid cyan;
+  padding: 15px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 16px;
+}
+button:hover {
+  background: cyan;
+  color: black;
+}
+#respuesta {
+  margin: 25px;
+  font-size: 18px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>J.A.R.V.I.S.</h1>
+<p>JUST A RATHER VERY INTELLIGENT SYSTEM</p>
+
+<div id="core"></div>
+
+<button onclick="escuchar()">🎙 ACTIVAR JARVIS</button>
+
+<div id="respuesta">
+Sistema preparado. Esperando órdenes.
+</div>
+
+<script>
+const respuesta = document.getElementById("respuesta");
+
+function hablar(texto) {
+  respuesta.innerText = texto;
+
+  speechSynthesis.cancel();
+
+  const voz = new SpeechSynthesisUtterance(texto);
+  voz.lang = "es-ES";
+  voz.rate = 1;
+  voz.pitch = 0.9;
+
+  speechSynthesis.speak(voz);
+}
+
+function escuchar() {
+  const Reconocimiento =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if (!Reconocimiento) {
+    hablar("Tu navegador no soporta reconocimiento de voz.");
+    return;
+  }
+
+  const reconocimiento = new Reconocimiento();
+  reconocimiento.lang = "es-ES";
+  reconocimiento.start();
+
+  reconocimiento.onresult = function(event) {
+    const comando = event.results[0][0].transcript
+      .toLowerCase();
+
+    respuesta.innerText = "Orden: " + comando;
+
+    if (comando.includes("hola")) {
+      hablar("Hola señor. Sistemas preparados.");
+    }
+
+    else if (comando.includes("hora")) {
+      hablar("Son las " +
+        new Date().toLocaleTimeString("es-CO"));
+    }
+
+    else if (comando.includes("youtube")) {
+      hablar("Abriendo YouTube.");
+      window.open("https://youtube.com", "_blank");
+    }
+
+    else if (comando.includes("google")) {
+      hablar("Abriendo Google.");
+      window.open("https://google.com", "_blank");
+    }
+
+    else if (comando.includes("cómo estás")) {
+      hablar("Todos los sistemas funcionan correctamente.");
+    }
+
+    else if (comando.includes("quién eres")) {
+      hablar("Soy Jarvis, su asistente virtual.");
+    }
+
+    else {
+      hablar("No tengo ese comando registrado.");
+    }
+  };
+
+  reconocimiento.onerror = function() {
+    hablar("No pude escuchar correctamente.");
+  };
+}
+</script>
+
+</body>
+</html>
